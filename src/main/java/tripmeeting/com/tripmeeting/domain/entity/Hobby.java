@@ -6,21 +6,25 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChattingRoom {
+public class Hobby {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private String id;
     @Basic
-    @Column(name = "created_at")
-    private Timestamp createdAt;
+    @Column(name = "name")
+    private String name;
+    @Basic
+    @Column(name = "type_id")
+    private String typeId;
     @Builder
-    public ChattingRoom(String id, Timestamp createdAt){
+    public Hobby(String id, String name, String typeId){
         this.id = id;
-        this.createdAt = createdAt;
+        this.name = name;
+        this.typeId = typeId;
     }
 }

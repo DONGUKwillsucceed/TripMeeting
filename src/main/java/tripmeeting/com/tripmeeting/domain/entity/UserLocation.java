@@ -8,19 +8,32 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
-@Entity @Getter
+@Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChattingRoom {
+public class UserLocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    private String id;
+    private long id;
+    @Basic
+    @Column(name = "user_id")
+    private String userId;
+    @Basic
+    @Column(name = "latitude")
+    private double latitude;
+    @Basic
+    @Column(name = "longitude")
+    private double longitude;
     @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
     @Builder
-    public ChattingRoom(String id, Timestamp createdAt){
+    public UserLocation(long id, String userId, double latitude, double longitude, Timestamp createdAt){
         this.id = id;
+        this.userId = userId;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.createdAt = createdAt;
     }
 }
