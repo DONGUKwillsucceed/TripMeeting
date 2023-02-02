@@ -7,20 +7,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChattingRoom {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
     @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
+    @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.LAZY)
+    public Collection<Chatting> chattingCollection;
     @Builder
-    public ChattingRoom(String id, Timestamp createdAt){
+    public ChattingRoom(String id, Collection<Chatting> chattingCollection,Timestamp createdAt){
         this.id = id;
         this.createdAt = createdAt;
+        this.chattingCollection = chattingCollection;
     }
 }

@@ -10,26 +10,25 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "User_ChattingRoom", schema = "TripMeeting")
+@Table(name = "User_ChattingRoom")
 public class UserChattingRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private long id;
     @Basic
-    @Column(name = "user_id")
-    private String userId;
-    @Basic
-    @Column(name = "chatting_room_id")
-    private String chattingRoomId;
-    @Basic
     @Column(name = "is_deleted")
     private byte isDeleted;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    User user;
+    @ManyToOne(targetEntity = ChattingRoom.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "chatting_room_id")
+    ChattingRoom chattingRoom;
     @Builder
-    public UserChattingRoom(long id, String userId, String chattingRoomId, byte isDeleted){
+    public UserChattingRoom(long id, String userId, ChattingRoom chattingRoom,byte isDeleted){
         this.id = id;
-        this.userId = userId;
-        this.chattingRoomId = chattingRoomId;
+        this.chattingRoom = chattingRoom;
         this.isDeleted = isDeleted;
     }
 }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Journey {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
@@ -46,15 +47,15 @@ public class Journey {
     private Timestamp updatedAt;
     @Basic
     @Column(name = "status")
-    private Object status;
-    @Basic
-    @Column(name = "chatting_room_id")
-    private String chattingRoomId;
+    private JourneyStatus status;
+    @ManyToOne(targetEntity = ChattingRoom.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "chatting_room_id")
+    private ChattingRoom chattingRoom;
 
     @Builder
     public Journey(String id, String title, String description, Date startDate, Date endDate,
                    int crewCapacity, int crewCnt, String areaCode, Timestamp createdAt, Timestamp updatedAt,
-                   Object status, String chattingRoomId){
+                   JourneyStatus status, ChattingRoom chattingRoom){
         this.id = id;
         this.title = title;
         this.description = description;
@@ -66,6 +67,6 @@ public class Journey {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.status = status;
-        this.chattingRoomId = chattingRoomId;
+        this.chattingRoom = chattingRoom;
     }
 }

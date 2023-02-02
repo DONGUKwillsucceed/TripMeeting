@@ -17,9 +17,6 @@ public class UserLocation {
     @Column(name = "id")
     private long id;
     @Basic
-    @Column(name = "user_id")
-    private String userId;
-    @Basic
     @Column(name = "latitude")
     private double latitude;
     @Basic
@@ -28,10 +25,15 @@ public class UserLocation {
     @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
+
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    User user;
+
     @Builder
-    public UserLocation(long id, String userId, double latitude, double longitude, Timestamp createdAt){
+    public UserLocation(long id, User user, double latitude, double longitude, Timestamp createdAt){
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.latitude = latitude;
         this.longitude = longitude;
         this.createdAt = createdAt;

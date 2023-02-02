@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HouseImage {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;

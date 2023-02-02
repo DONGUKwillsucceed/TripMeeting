@@ -1,13 +1,18 @@
 package tripmeeting.com.tripmeeting.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
-@Entity
+@Entity @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "chatting")
 public class Chatting {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
@@ -15,65 +20,25 @@ public class Chatting {
     @Column(name = "name")
     private String name;
     @Basic
-    @Column(name = "user_id")
-    private String userId;
-    @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
     @Basic
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    public User user;
+    @ManyToOne(targetEntity = ChattingRoom.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "chatting_room_id")
+    public ChattingRoom chattingRoom;
+    @Builder
+    public Chatting(String id, String name, User user, ChattingRoom chattingRoom,Timestamp createdAt, Timestamp updatedAt){
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
+        this.user = user;
+        this.chattingRoom = chattingRoom;
         this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Chatting chatting = (Chatting) o;
-        return Objects.equals(id, chatting.id) && Objects.equals(name, chatting.name) && Objects.equals(userId, chatting.userId) && Objects.equals(createdAt, chatting.createdAt) && Objects.equals(updatedAt, chatting.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, userId, createdAt, updatedAt);
+        this.updatedAt =updatedAt;
     }
 }

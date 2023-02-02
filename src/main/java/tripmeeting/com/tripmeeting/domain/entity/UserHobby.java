@@ -10,22 +10,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "User_Hobby", schema = "TripMeeting")
+@Table(name = "User_Hobby")
 public class UserHobby {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private long id;
-    @Basic
-    @Column(name = "user_id")
-    private String userId;
-    @Basic
-    @Column(name = "hobby_id")
-    private String hobbyId;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    User user;
+    @ManyToOne(targetEntity = Hobby.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "hobby_id")
+    Hobby hobby;
     @Builder
-    public UserHobby(long id, String userId, String hobbyId){
+    public UserHobby(long id, User user, Hobby hobby){
         this.id = id;
-        this.userId = userId;
-        this.hobbyId = hobbyId;
+        this.user = user;
+        this.hobby = hobby;
     }
 }

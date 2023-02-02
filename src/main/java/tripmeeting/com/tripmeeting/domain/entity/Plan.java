@@ -5,13 +5,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Plan {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
@@ -35,9 +36,9 @@ public class Plan {
     private int turn;
     @Basic
     @Column(name = "status")
-    private Object status;
+    private JourneyStatus status;
     @Builder
-    public Plan(String id, String name, double latitude, double longitude, String tagId, int day, int turn, Object status){
+    public Plan(String id, String name, double latitude, double longitude, String tagId, int day, int turn, JourneyStatus status){
         this.id = id;
         this.name = name;
         this.latitude = latitude;

@@ -11,20 +11,20 @@ import java.util.Objects;
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Hobby {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
     @Basic
     @Column(name = "name")
     private String name;
-    @Basic
-    @Column(name = "type_id")
-    private String typeId;
+    @ManyToOne(targetEntity = HobbyType.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id")
+    private HobbyType hobbyType;
     @Builder
-    public Hobby(String id, String name, String typeId){
+    public Hobby(String id, String name, HobbyType hobbyType){
         this.id = id;
         this.name = name;
-        this.typeId = typeId;
+        this.hobbyType = hobbyType;
     }
 }
