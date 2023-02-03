@@ -3,9 +3,9 @@ package tripmeeting.com.tripmeeting.repository.hobby;
 import org.springframework.data.jpa.repository.JpaRepository;
 import tripmeeting.com.tripmeeting.domain.entity.Hobby;
 
-import java.util.List;
+import java.util.ArrayList;
+
 
 public interface HobbyRepository extends JpaRepository<Hobby, String> {
-    @Override
-    List<Hobby> findAllById(Iterable<String> strings);
+    ArrayList<Hobby> findAllByNameContaining(String search);
 }
