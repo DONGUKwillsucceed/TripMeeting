@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
+import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.domain.type.UserStatus;
 
 import java.sql.Timestamp;
@@ -61,6 +62,18 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "hobby_id")})
     private Set<Hobby> hobbies = new HashSet<>();
 
+    public void patch(PatchUserDto dto, Job job, Set<Hobby> hobbies){
+        if(dto.getName() != null)
+            this.name = dto.getName();
+        if(dto.getAge() > 0)
+            this.age = dto.getAge();
+        if(dto.getDescription() != null)
+            this.description = dto.getDescription();
+        if(job != null)
+            this.job = job;
+        if(hobbies != null)
+            this.hobbies = hobbies;
+    }
     @Builder
     public User(String id, String name, int age, String areaCode, Job job, String description, UserStatus status,
                 Timestamp createdAt, Timestamp updatedAt, String kakaoId, String naverId, Set<Hobby> hobbies){
