@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,6 +17,7 @@ public class Hobby {
     @Basic
     @Column(name = "name")
     private String name;
+
     @ManyToOne(targetEntity = HobbyType.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     private HobbyType hobbyType;

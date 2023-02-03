@@ -2,6 +2,7 @@ package tripmeeting.com.tripmeeting.service.user;
 
 import org.springframework.stereotype.Service;
 import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
+import tripmeeting.com.tripmeeting.controller.user.dto.UserDto;
 import tripmeeting.com.tripmeeting.domain.entity.Hobby;
 import tripmeeting.com.tripmeeting.domain.entity.Job;
 import tripmeeting.com.tripmeeting.domain.entity.User;
@@ -22,6 +23,10 @@ public class UserService {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.hobbyRepository = hobbyRepository;
+    }
+
+    public UserDto findUnique(String userId){
+        return UserDto.mapFromRelation(userRepository.findUserById(userId));
     }
 
     public void create(CreateUserDto dto){
