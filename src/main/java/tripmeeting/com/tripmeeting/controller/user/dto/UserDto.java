@@ -17,10 +17,10 @@ public class UserDto {
     String name;
     //ArrayList<String> profileImages;
     String description;
-    List<String> hobbies;
+    List<Hobby> hobbies;
 
     @Builder
-    public UserDto(String id, String name, String description, List<String> hobbies){
+    public UserDto(String id, String name, String description, List<Hobby> hobbies){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -28,7 +28,10 @@ public class UserDto {
     }
 
     public static UserDto mapFromRelation(User user){
-        List<String> hobbies = user.getHobbies().stream().map(Hobby::getName).collect(Collectors.toList());
+        List<Hobby> hobbies = user.getHobbies().stream().map(e-> Hobby.builder()
+                .id(e.getId())
+                .name(e.getName())
+                .build()).collect(Collectors.toList());
         return builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -36,4 +39,6 @@ public class UserDto {
                 .hobbies(hobbies)
                 .build();
     }
+
+
 }
