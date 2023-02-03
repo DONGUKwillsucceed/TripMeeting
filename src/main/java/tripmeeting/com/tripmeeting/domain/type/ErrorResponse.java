@@ -1,7 +1,6 @@
 package tripmeeting.com.tripmeeting.domain.type;
 
 import lombok.*;
-import org.springframework.http.HttpStatusCode;
 
 import java.util.Date;
 

@@ -1,17 +1,25 @@
 package tripmeeting.com.tripmeeting.controller.user;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
+import tripmeeting.com.tripmeeting.service.user.UserService;
 
 @RestController
 @Slf4j
 @RequestMapping("user")
 public class UserController {
+    UserService userService;
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
 
     @PostMapping("create")
-    public void create(){
-
+    public void create(@Valid @RequestBody CreateUserDto dto){
+        userService.create(dto);
     }
 }
