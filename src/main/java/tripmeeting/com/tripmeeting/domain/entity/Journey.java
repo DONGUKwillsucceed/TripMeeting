@@ -37,9 +37,6 @@ public class Journey {
     @Column(name = "crew_cnt")
     private int crewCnt;
     @Basic
-    @Column(name = "area_code")
-    private String areaCode;
-    @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
     @Basic
@@ -52,9 +49,13 @@ public class Journey {
     @JoinColumn(name = "chatting_room_id")
     private ChattingRoom chattingRoom;
 
+    @ManyToOne(targetEntity = AreaCode.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_code")
+    public AreaCode areaCode;
+
     @Builder
     public Journey(String id, String title, String description, Date startDate, Date endDate,
-                   int crewCapacity, int crewCnt, String areaCode, Timestamp createdAt, Timestamp updatedAt,
+                   int crewCapacity, int crewCnt, AreaCode areaCode, Timestamp createdAt, Timestamp updatedAt,
                    JourneyStatus status, ChattingRoom chattingRoom){
         this.id = id;
         this.title = title;

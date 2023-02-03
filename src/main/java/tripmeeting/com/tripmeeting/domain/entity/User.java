@@ -29,9 +29,6 @@ public class User {
     @Column(name = "age", nullable = false)
     private int age;
     @Basic
-    @Column(name = "area_Code", nullable = false)
-    private String areaCode;
-    @Basic
     @Column(name = "description", nullable = false)
     private String description;
     @Basic
@@ -52,6 +49,11 @@ public class User {
     @Basic
     @Column(name = "naver_id")
     private String naverId;
+
+    @ManyToOne(targetEntity = AreaCode.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_code")
+    public AreaCode areaCode;
+
     @ManyToOne(targetEntity = Job.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     public Job job;
@@ -75,7 +77,7 @@ public class User {
             this.hobbies = hobbies;
     }
     @Builder
-    public User(String id, String name, int age, String areaCode, Job job, String description, UserStatus status,
+    public User(String id, String name, int age, AreaCode areaCode, Job job, String description, UserStatus status,
                 Timestamp createdAt, Timestamp updatedAt, String kakaoId, String naverId, Set<Hobby> hobbies){
         this.id = id;
         this.name = name;
@@ -91,11 +93,11 @@ public class User {
         this.hobbies = hobbies;
     }
 
-    public static User mapFromDto(CreateUserDto dto, Job job, Set<Hobby> hobbies){
+    public static User mapFromDto(CreateUserDto dto, AreaCode areaCode,Job job, Set<Hobby> hobbies){
         return User.builder()
                 .name(dto.getName())
                 .age(dto.getAge())
-                .areaCode(dto.getAreaCode())
+                .areaCode(areaCode)
                 .job(job)
                 .hobbies(hobbies)
                 .status(UserStatus.okay)
