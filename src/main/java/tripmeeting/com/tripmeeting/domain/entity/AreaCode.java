@@ -3,11 +3,13 @@ package tripmeeting.com.tripmeeting.domain.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "area_code", schema = "TripMeeting")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AreaCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
