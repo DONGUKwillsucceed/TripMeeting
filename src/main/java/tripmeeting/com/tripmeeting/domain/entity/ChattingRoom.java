@@ -11,6 +11,7 @@ import java.util.Collection;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "chatting_room")
 public class ChattingRoom {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id

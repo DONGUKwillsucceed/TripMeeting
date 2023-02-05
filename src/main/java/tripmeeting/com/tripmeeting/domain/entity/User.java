@@ -11,7 +11,9 @@ import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.domain.type.UserStatus;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,6 +56,9 @@ public class User {
     @JoinColumn(name = "area_code")
     public AreaCode areaCode;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    public Collection<UserImage> userImages;
+
     @ManyToOne(targetEntity = Job.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     public Job job;
@@ -76,9 +81,10 @@ public class User {
         if(hobbies != null)
             this.hobbies = hobbies;
     }
+
     @Builder
     public User(String id, String name, int age, AreaCode areaCode, Job job, String description, UserStatus status,
-                Timestamp createdAt, Timestamp updatedAt, String kakaoId, String naverId, Set<Hobby> hobbies){
+                Timestamp createdAt, Timestamp updatedAt, String kakaoId, String naverId, Set<Hobby> hobbies, List<UserImage> images){
         this.id = id;
         this.name = name;
         this.age = age;
@@ -91,9 +97,10 @@ public class User {
         this.kakaoId = kakaoId;
         this.naverId = naverId;
         this.hobbies = hobbies;
+        this.userImages = images;
     }
 
-    public static User mapFromDto(CreateUserDto dto, AreaCode areaCode,Job job, Set<Hobby> hobbies){
+    public static User mapFromDto(CreateUserDto dto, AreaCode areaCode,Job job, Set<Hobby> hobbies, List<UserImage> images){
         return User.builder()
                 .name(dto.getName())
                 .age(dto.getAge())
@@ -104,6 +111,7 @@ public class User {
                 .description(dto.getDescription())
                 .kakaoId(dto.getKakaoId())
                 .naverId(dto.getNaverId())
+                .images(images)
                 .build();
     }
 

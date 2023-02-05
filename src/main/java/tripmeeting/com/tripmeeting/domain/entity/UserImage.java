@@ -35,6 +35,10 @@ public class UserImage {
     @ManyToOne(targetEntity = Chatting.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "chatting_id")
     Chatting chatting;
+
+    public void updateUser(User user){
+        this.user = user;
+    }
     @Builder
     public UserImage(String id, String url, User user, Chatting chatting, Timestamp createdAt, Timestamp updatedAt, byte isDeleted){
         this.id = id;

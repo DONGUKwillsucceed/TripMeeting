@@ -1,47 +1,69 @@
 package tripmeeting.com.tripmeeting.service.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.UserDto;
-import tripmeeting.com.tripmeeting.domain.entity.AreaCode;
-import tripmeeting.com.tripmeeting.domain.entity.Hobby;
-import tripmeeting.com.tripmeeting.domain.entity.Job;
-import tripmeeting.com.tripmeeting.domain.entity.User;
+import tripmeeting.com.tripmeeting.domain.entity.*;
+import tripmeeting.com.tripmeeting.domain.service.S3Service;
 import tripmeeting.com.tripmeeting.repository.area_code.AreaCodeRepository;
 import tripmeeting.com.tripmeeting.repository.hobby.HobbyRepository;
+import tripmeeting.com.tripmeeting.repository.image.ImageRepository;
 import tripmeeting.com.tripmeeting.repository.job.JobRepository;
 import tripmeeting.com.tripmeeting.repository.user.UserRepository;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-@Service
+@Service @Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final HobbyRepository hobbyRepository;
     private final AreaCodeRepository areaCodeRepository;
+    private final S3Service s3Service;
+
+    private final ImageRepository imageRepository;
 
     public UserService(UserRepository userRepository,
                        JobRepository jobRepository,
                        HobbyRepository hobbyRepository,
-                       AreaCodeRepository areaCodeRepository) {
+                       AreaCodeRepository areaCodeRepository,
+                       ImageRepository imageRepository,
+                       S3Service s3Service) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.hobbyRepository = hobbyRepository;
         this.areaCodeRepository = areaCodeRepository;
+        this.imageRepository = imageRepository;
+        this.s3Service = s3Service;
     }
 
     public UserDto findUnique(String userId){
-        return UserDto.mapFromRelation(userRepository.findUserById(userId));
+        User user = userRepository.findUserById(userId);
+        List<String> urls = new ArrayList<>();
+        for (UserImage userImage : user.userImages) {
+            String url = s3Service.getObjectUrl(userImage.getUrl());
+            urls.add(url);
+        }
+
+        return UserDto.mapFromRelation(user, urls);
     }
 
     public void create(CreateUserDto dto){
         AreaCode areaCode = areaCodeRepository.findAreaCodeByAreaCode(dto.getAreaCode());
+        List<UserImage> images = imageRepository.findAllById(dto.getImageIds());
         Job job = jobRepository.findJobById(dto.getJobId());
         Set<Hobby> hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
-        userRepository.save(User.mapFromDto(dto, areaCode,job, hobbies));
+
+        User user = userRepository.save(User.mapFromDto(dto, areaCode,job, hobbies, null));
+        for(UserImage image : images){
+            image.updateUser(user);
+            imageRepository.save(image);
+        }
     }
 
     public void patch(String userId, PatchUserDto dto){
