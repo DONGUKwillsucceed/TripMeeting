@@ -34,6 +34,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErrorResponse> handleNullPointException(NullPointerException e){
+        log.error("Not Found Error", e);
+        String message = e.getMessage();
+        ErrorResponse response = new ErrorResponse(message);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException e){

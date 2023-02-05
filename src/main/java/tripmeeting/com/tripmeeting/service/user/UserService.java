@@ -45,6 +45,7 @@ public class UserService {
 
     public UserDto findUnique(String userId){
         User user = userRepository.findUserById(userId);
+
         List<UserImage> profileImages = new ArrayList<>();
         for (UserImage userImage : user.userImages) {
             if(userImage.getIsDeleted() == 1)
