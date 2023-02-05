@@ -32,6 +32,6 @@ public class CreateUserDto {
     @NotEmpty(message = "hobby ids is necessary")
     ArrayList<String> hobbyIds;
 
-    @NotEmpty(message = "image ids is necessary")
-    ArrayList<String> imageIds;
+    @NotEmpty(message = "profile image ids is necessary")
+    ArrayList<String> profileImageIds;
 }

@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_image")
 public class UserImage {
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
@@ -38,6 +37,9 @@ public class UserImage {
 
     public void updateUser(User user){
         this.user = user;
+    }
+    public void delete(){
+        this.isDeleted = 1;
     }
     @Builder
     public UserImage(String id, String url, User user, Chatting chatting, Timestamp createdAt, Timestamp updatedAt, byte isDeleted){

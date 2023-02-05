@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tripmeeting.com.tripmeeting.domain.entity.Hobby;
 import tripmeeting.com.tripmeeting.domain.entity.User;
+import tripmeeting.com.tripmeeting.domain.entity.UserImage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,12 +17,12 @@ import java.util.stream.Collectors;
 public class UserDto {
     String id;
     String name;
-    List<String> profileImages;
+    List<UserImage> profileImages;
     String description;
     List<Hobby> hobbies;
 
     @Builder
-    public UserDto(String id, String name, String description, List<String> profileImages, List<Hobby> hobbies){
+    public UserDto(String id, String name, String description, List<UserImage> profileImages, List<Hobby> hobbies){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -29,7 +30,7 @@ public class UserDto {
         this.hobbies = hobbies;
     }
 
-    public static UserDto mapFromRelation(User user, List<String> urls){
+    public static UserDto mapFromRelation(User user, List<UserImage> profileImages){
         List<Hobby> hobbies = user.getHobbies().stream().map(e-> Hobby.builder()
                 .id(e.getId())
                 .name(e.getName())
@@ -40,7 +41,7 @@ public class UserDto {
                 .name(user.getName())
                 .description(user.getDescription())
                 .hobbies(hobbies)
-                .profileImages(urls)
+                .profileImages(profileImages)
                 .build();
     }
 

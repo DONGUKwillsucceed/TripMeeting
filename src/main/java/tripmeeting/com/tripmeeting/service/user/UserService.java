@@ -2,6 +2,7 @@ package tripmeeting.com.tripmeeting.service.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tripmeeting.com.tripmeeting.controller.user.dto.CreateProfileImageDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.UserDto;
@@ -44,18 +45,29 @@ public class UserService {
 
     public UserDto findUnique(String userId){
         User user = userRepository.findUserById(userId);
-        List<String> urls = new ArrayList<>();
+        List<UserImage> profileImages = new ArrayList<>();
         for (UserImage userImage : user.userImages) {
+            if(userImage.getIsDeleted() == 1)
+                continue;
+
             String url = s3Service.getObjectUrl(userImage.getUrl());
-            urls.add(url);
+            UserImage profileImage = UserImage.mapFromDto(userImage.getId(), url);
+            profileImages.add(profileImage);
         }
 
-        return UserDto.mapFromRelation(user, urls);
+        return UserDto.mapFromRelation(user, profileImages);
+    }
+
+    public void createProfileImage(String userId, CreateProfileImageDto dto){
+        UserImage image = imageRepository.findUserImageById(dto.getId());
+        User user = userRepository.findUserById(userId);
+        image.updateUser(user);
+        imageRepository.save(image);
     }
 
     public void create(CreateUserDto dto){
         AreaCode areaCode = areaCodeRepository.findAreaCodeByAreaCode(dto.getAreaCode());
-        List<UserImage> images = imageRepository.findAllById(dto.getImageIds());
+        List<UserImage> images = imageRepository.findAllById(dto.getProfileImageIds());
         Job job = jobRepository.findJobById(dto.getJobId());
         Set<Hobby> hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
 
@@ -72,11 +84,20 @@ public class UserService {
         Job job = jobRepository.findJobById(dto.getJobId());
         if(dto.getHobbyIds() != null)
             hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
+
         user.patch(dto, job, hobbies);
         userRepository.save(user);
     }
 
     public void delete(String userId){
-        userRepository.deleteById(userId);
+        User user = userRepository.findUserById(userId);
+        user.delete();
+        userRepository.save(user);
+    }
+
+    public void deleteProfileImage(String imageId) {
+        UserImage image = imageRepository.findUserImageById(imageId);
+        image.delete();
+        imageRepository.save(image);
     }
 }

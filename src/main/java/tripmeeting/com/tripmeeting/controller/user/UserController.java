@@ -3,6 +3,7 @@ package tripmeeting.com.tripmeeting.controller.user;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import tripmeeting.com.tripmeeting.controller.user.dto.CreateProfileImageDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.UserDto;
@@ -27,6 +28,11 @@ public class UserController {
         userService.patch(userId, dto);
     }
 
+    @PostMapping("{userId}/image/profile/create")
+    public void createProfileImage(@PathVariable("userId") String userId, @Valid @RequestBody CreateProfileImageDto dto){
+        userService.createProfileImage(userId, dto);
+    }
+
     @PostMapping("create")
     public void create(@Valid @RequestBody CreateUserDto dto){
         userService.create(dto);
@@ -35,5 +41,10 @@ public class UserController {
     @DeleteMapping("{userId}")
     public void delete(@PathVariable("userId") String userId){
         userService.delete(userId);
+    }
+
+    @DeleteMapping("{userId}/image/profile/{imageId}")
+    public void deleteProfileImage(@PathVariable("imageId") String imageId){
+        userService.deleteProfileImage(imageId);
     }
 }

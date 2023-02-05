@@ -82,6 +82,10 @@ public class User {
             this.hobbies = hobbies;
     }
 
+    public void delete(){
+        status = UserStatus.deleted;
+    }
+
     @Builder
     public User(String id, String name, int age, AreaCode areaCode, Job job, String description, UserStatus status,
                 Timestamp createdAt, Timestamp updatedAt, String kakaoId, String naverId, Set<Hobby> hobbies, List<UserImage> images){
