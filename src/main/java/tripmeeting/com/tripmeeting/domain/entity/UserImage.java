@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "user_image")
 public class UserImage {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
@@ -44,4 +45,12 @@ public class UserImage {
         this.updatedAt = updatedAt;
         this.isDeleted = isDeleted;
     }
+
+    public static UserImage mapFromDto(String id, String s3Path){
+        return UserImage.builder()
+                .id(id)
+                .url(s3Path)
+                .build();
+    }
+
 }

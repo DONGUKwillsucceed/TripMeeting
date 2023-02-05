@@ -9,37 +9,37 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Date;
-import java.util.Objects;
 
+@Component
 public class S3Service {
     //Amazon-s3-sdk
     private AmazonS3 s3Client;
 
-    @Value("${aws.access.id}")
     private String accessKey;
 
-    @Value("${aws.access.key}")
     private String secretKey;
     private final Regions clientRegion = Regions.AP_NORTHEAST_2;
 
-    @Value("${aws.s3.bucket}")
+
     private String bucket;
 
-    @Value("${aws.s3.access.expiryMillis}")
     private long expiryMillis;
 
-    private S3Service() {
+    public S3Service(@Value("${aws.access.id}") String accessKey, @Value("${aws.access.key}") String secretKey,
+                     @Value("${aws.s3.bucket}") String bucket, @Value("${aws.s3.access.expiryMillis}") long expiryMillis) {
+        initValues(accessKey, secretKey, bucket,expiryMillis);
         createS3Client();
     }
 
-    //singleton pattern
-    static private final S3Service instance = null;
-
-    public static S3Service getInstance() {
-        return Objects.requireNonNullElseGet(instance, S3Service::new);
+    private void initValues(String accessKey, String secretKey, String bucket, long expiryMillis){
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.bucket = bucket;
+        this.expiryMillis = expiryMillis;
     }
 
     //aws S3 client 생성
