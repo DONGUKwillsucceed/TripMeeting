@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import java.sql.Date;
 
@@ -22,6 +23,8 @@ public class CreateJourneyDto {
     int max;
     @NotEmpty(message = "area code is necessary")
     String areaCode;
+    @Length(max = 5, min = 1, message = "Badly formed password")
+    String password;
 
     @NotNull(message = "start date is necessary")
     Date startDate;

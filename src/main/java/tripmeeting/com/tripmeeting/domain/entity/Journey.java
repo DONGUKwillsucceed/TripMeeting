@@ -27,6 +27,10 @@ public class Journey {
     @Basic
     @Column(name = "description")
     private String description;
+
+    @Basic
+    @Column(name = "password")
+    private String password;
     @Basic
     @Column(name = "start_date")
     private Date startDate;
@@ -75,7 +79,8 @@ public class Journey {
     @Builder
     public Journey(String id, String title, String description, Date startDate, Date endDate,
                    int crewCapacity, int crewCnt, AreaCode areaCode, Timestamp createdAt, Timestamp updatedAt,
-                   JourneyStatus status, ChattingRoom chattingRoom, User user, HouseImage image, Collection<Plan> plans){
+                   JourneyStatus status, ChattingRoom chattingRoom, User user, HouseImage image, Collection<Plan> plans,
+                   String password){
         this.id = id;
         this.title = title;
         this.description = description;
@@ -90,6 +95,7 @@ public class Journey {
         this.plans = plans;
         this.user = user;
         this.image =image;
+        this.password = password;
     }
 
     public static Journey mapFromDto(CreateJourneyDto dto, AreaCode areaCode, ChattingRoom chattingRoom, User user, HouseImage image){
@@ -97,6 +103,7 @@ public class Journey {
                 .title(dto.getName())
                 .description(dto.getDescription())
                 .crewCapacity(dto.getMax())
+                .password(dto.getPassword())
                 .areaCode(areaCode)
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
