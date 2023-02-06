@@ -8,6 +8,7 @@ import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.UserDto;
 import tripmeeting.com.tripmeeting.domain.entity.*;
 import tripmeeting.com.tripmeeting.domain.service.S3Service;
+import tripmeeting.com.tripmeeting.exception.exception.NotFoundError;
 import tripmeeting.com.tripmeeting.repository.area_code.AreaCodeRepository;
 import tripmeeting.com.tripmeeting.repository.hobby.HobbyRepository;
 import tripmeeting.com.tripmeeting.repository.image.ImageRepository;
@@ -43,8 +44,9 @@ public class UserService {
         this.s3Service = s3Service;
     }
 
-    public UserDto findUnique(String userId){
+    public UserDto findUnique(String userId) throws NotFoundError {
         User user = userRepository.findUserById(userId);
+        if(user == null) throw new NotFoundError("user not found");
 
         List<UserImage> profileImages = new ArrayList<>();
         for (UserImage userImage : user.userImages) {
@@ -59,17 +61,23 @@ public class UserService {
         return UserDto.mapFromRelation(user, profileImages);
     }
 
-    public void createProfileImage(String userId, CreateProfileImageDto dto){
+    public void createProfileImage(String userId, CreateProfileImageDto dto) throws NotFoundError {
         UserImage image = imageRepository.findUserImageById(dto.getId());
+        if(image == null) throw new NotFoundError("image not found");
+
         User user = userRepository.findUserById(userId);
         image.updateUser(user);
         imageRepository.save(image);
     }
 
-    public void create(CreateUserDto dto){
+    public void create(CreateUserDto dto) throws NotFoundError {
         AreaCode areaCode = areaCodeRepository.findAreaCodeByAreaCode(dto.getAreaCode());
-        List<UserImage> images = imageRepository.findAllById(dto.getProfileImageIds());
         Job job = jobRepository.findJobById(dto.getJobId());
+
+        if(areaCode == null) throw new NotFoundError("area code not found");
+        if(job == null) throw new NotFoundError("job not found");
+
+        List<UserImage> images = imageRepository.findAllById(dto.getProfileImageIds());
         Set<Hobby> hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
 
         User user = userRepository.save(User.mapFromDto(dto, areaCode,job, hobbies, null));
@@ -79,10 +87,14 @@ public class UserService {
         }
     }
 
-    public void patch(String userId, PatchUserDto dto){
+    public void patch(String userId, PatchUserDto dto) throws NotFoundError {
         Set<Hobby> hobbies = null;
         User user = userRepository.findUserById(userId);
         Job job = jobRepository.findJobById(dto.getJobId());
+
+        if(user == null) throw new NotFoundError("user not found");
+        if(job == null) throw new NotFoundError("job not found");
+
         if(dto.getHobbyIds() != null)
             hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
 
@@ -90,14 +102,18 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void delete(String userId){
+    public void delete(String userId) throws NotFoundError {
         User user = userRepository.findUserById(userId);
+        if(user == null) throw new NotFoundError("user not found");
+
         user.delete();
         userRepository.save(user);
     }
 
-    public void deleteProfileImage(String imageId) {
+    public void deleteProfileImage(String imageId) throws NotFoundError {
         UserImage image = imageRepository.findUserImageById(imageId);
+        if(image == null) throw new NotFoundError("image not found");
+
         image.delete();
         imageRepository.save(image);
     }

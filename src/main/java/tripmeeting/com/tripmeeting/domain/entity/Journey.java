@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import tripmeeting.com.tripmeeting.controller.journey.dto.CreateJourneyDto;
+import tripmeeting.com.tripmeeting.controller.journey.dto.PatchJourneyDto;
 import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 
 import java.sql.Date;
@@ -74,6 +75,15 @@ public class Journey {
 
     public void delete(){
         this.status = JourneyStatus.deleted;
+    }
+
+    public void patch(PatchJourneyDto dto){
+        if(dto.getName() != null){
+            this.title = dto.getName();
+        }
+        if(dto.getDescription() != null){
+            this.description = dto.getDescription();
+        }
     }
 
     @Builder
