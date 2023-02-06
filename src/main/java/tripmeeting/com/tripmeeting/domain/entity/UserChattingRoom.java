@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "User_ChattingRoom")
+@Table(name = "User_Chatting_Room")
 public class UserChattingRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -26,9 +26,17 @@ public class UserChattingRoom {
     @JoinColumn(name = "chatting_room_id")
     ChattingRoom chattingRoom;
     @Builder
-    public UserChattingRoom(long id, String userId, ChattingRoom chattingRoom,byte isDeleted){
+    public UserChattingRoom(long id, User user, ChattingRoom chattingRoom,byte isDeleted){
         this.id = id;
         this.chattingRoom = chattingRoom;
+        this.user = user;
         this.isDeleted = isDeleted;
+    }
+
+    public static UserChattingRoom mapFromRelation(User user, ChattingRoom chattingRoom){
+        return UserChattingRoom.builder()
+                .user(user)
+                .chattingRoom(chattingRoom)
+                .build();
     }
 }

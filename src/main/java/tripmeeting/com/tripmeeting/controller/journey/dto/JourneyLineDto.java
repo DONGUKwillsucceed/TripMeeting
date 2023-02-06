@@ -38,13 +38,24 @@ public class JourneyLineDto {
         this.members = members;
     }
 
-    public static JourneyLineDto mapFromRelation(Journey journey, String profileImageUrl){
-        return JourneyLineDto.builder()
-        .id(journey.getId())
-        .name(journey.getTitle())
-        .imageUrl(journey.getImage().getUrl())
-        .max(journey.getCrewCapacity())
-        .build();
+    public static Set<JourneyLineDto> mapFromRelation(List<Journey> journeys){
+        Set<JourneyLineDto> dtos = new HashSet<>();
 
+        for(Journey journey : journeys){
+            JourneyLineDto dto = JourneyLineDto.builder()
+                    .id(journey.getId())
+                    .name(journey.getTitle())
+                    .startDate(journey.getStartDate().toString())
+                    .endDate(journey.getEndDate().toString())
+                    .imageUrl(
+                            journey.getImage() != null ? journey.getImage().getUrl() : null
+                    )
+                    .max(journey.getCrewCapacity())
+                    .members(MemberDto.mapFromRelation(journey.getChattingRoom().getUsers()))
+                    .build();
+
+            dtos.add(dto);
+        }
+        return dtos;
     }
 }

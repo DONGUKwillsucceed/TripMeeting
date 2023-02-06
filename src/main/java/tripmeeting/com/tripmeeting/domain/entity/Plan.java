@@ -35,8 +35,14 @@ public class Plan {
     @Column(name = "turn")
     private int turn;
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private JourneyStatus status;
+
+    @ManyToOne(targetEntity = Journey.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "journey_id")
+    Journey journey;
+
     @Builder
     public Plan(String id, String name, double latitude, double longitude, String tagId, int day, int turn, JourneyStatus status){
         this.id = id;

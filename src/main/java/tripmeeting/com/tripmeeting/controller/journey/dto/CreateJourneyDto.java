@@ -23,9 +23,9 @@ public class CreateJourneyDto {
     @NotEmpty(message = "area code is necessary")
     String areaCode;
 
-    @NotEmpty(message = "start date is necessary")
+    @NotNull(message = "start date is necessary")
     Date startDate;
-    @NotEmpty(message = "end date is necessary")
+    @NotNull(message = "end date is necessary")
     Date endDate;
 
     @NotEmpty(message = "user Id is necessary")

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import tripmeeting.com.tripmeeting.controller.journey.dto.CreateJourneyDto;
 import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyDto;
 import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyLineDto;
-import tripmeeting.com.tripmeeting.exception.exception.BadlyFormedError;
 import tripmeeting.com.tripmeeting.service.journey.JourneyService;
 
 import java.util.Set;
@@ -22,14 +21,14 @@ public class JourneyController {
 
     @GetMapping("{journeyId}")
     public JourneyDto findUnique(@PathVariable("journeyId") String journeyId){
-
+        return journeyService.findUnique(journeyId);
     }
 
     @GetMapping()
     public Set<JourneyLineDto> findMany(
                                    @RequestParam(name = "area_code", required = false) String area_code,
-                                   @RequestParam(name = "search", required = false) String search) throws BadlyFormedError {
-
+                                   @RequestParam(name = "search", required = false) String search) {
+        return journeyService.findMany(area_code, search);
     }
 
     @PostMapping("create")

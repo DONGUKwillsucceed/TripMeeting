@@ -5,9 +5,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
-import java.util.Collection;
+import java.util.*;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,10 +19,17 @@ public class ChattingRoom {
     @Column(name = "id")
     private String id;
     @Basic
+    @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
     @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.LAZY)
     public Collection<Chatting> chattingCollection;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "User_Chatting_Room",
+            joinColumns = {@JoinColumn(name = "chatting_room_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private final List<User> users = new ArrayList<>();
     @Builder
     public ChattingRoom(String id, Collection<Chatting> chattingCollection,Timestamp createdAt){
         this.id = id;

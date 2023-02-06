@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import tripmeeting.com.tripmeeting.domain.entity.User;
 import tripmeeting.com.tripmeeting.domain.entity.UserImage;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,11 +25,17 @@ public class MemberDto {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public static MemberDto mapFromRelation(User user, String profileImageUrl){
-        return MemberDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .profileImageUrl(profileImageUrl)
-                .build();
+    public static Set<MemberDto> mapFromRelation(List<User> users){
+        Set<MemberDto> members = new HashSet<>();
+        for(User user : users){
+            MemberDto dto = MemberDto.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .profileImageUrl(user.getUserImages().stream().map(UserImage::getUrl).toString())
+                    .build();
+
+            members.add(dto);
+        }
+        return members;
     }
 }
