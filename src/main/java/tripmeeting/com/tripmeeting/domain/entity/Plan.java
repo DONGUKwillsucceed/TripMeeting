@@ -43,6 +43,10 @@ public class Plan {
     @JoinColumn(name = "journey_id")
     Journey journey;
 
+    public void delete(){
+        this.status = JourneyStatus.deleted;
+    }
+
     @Builder
     public Plan(String id, String name, double latitude, double longitude, String tagId, int day, int turn, JourneyStatus status){
         this.id = id;

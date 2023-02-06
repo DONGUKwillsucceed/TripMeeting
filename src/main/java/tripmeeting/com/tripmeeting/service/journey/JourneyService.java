@@ -6,12 +6,14 @@ import tripmeeting.com.tripmeeting.controller.journey.dto.CreateJourneyDto;
 import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyDto;
 import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyLineDto;
 import tripmeeting.com.tripmeeting.domain.entity.*;
+import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 import tripmeeting.com.tripmeeting.repository.area_code.AreaCodeRepository;
 import tripmeeting.com.tripmeeting.repository.chattng_room.ChattingRoomRepository;
 import tripmeeting.com.tripmeeting.repository.chattng_room.UserChattingRoomRepository;
 import tripmeeting.com.tripmeeting.repository.journey.JourneyRepository;
 import tripmeeting.com.tripmeeting.repository.user.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,10 +46,10 @@ public class JourneyService {
     public Set<JourneyLineDto> findMany(String areaCode, String search){
         AreaCode areaCode1 = areaCodeRepository.findAreaCodeByAreaCode(areaCode);
         if(search != null){
-            List<Journey> journeys = journeyRepository.findJourneysByAreaCodeAndTitleContaining(areaCode1, search);
+            List<Journey> journeys = journeyRepository.findJourneysByAreaCodeAndTitleContainingAndStatus(areaCode1, search, JourneyStatus.okay);
             return JourneyLineDto.mapFromRelation(journeys);
         }
-        List<Journey> journeys = journeyRepository.findJourneysByAreaCode(areaCode1);
+        List<Journey> journeys = journeyRepository.findJourneysByAreaCodeAndStatus(areaCode1, JourneyStatus.okay);
         return JourneyLineDto.mapFromRelation(journeys);
     }
 
@@ -64,6 +66,11 @@ public class JourneyService {
 
     public void delete(String journeyId){
         Journey journey = journeyRepository.findJourneyById(journeyId);
+        ArrayList<Plan> plans = (ArrayList<Plan>) journey.getPlans();
+
+        for(Plan plan : plans){
+            plan.delete();
+        }
         journey.delete();
         journeyRepository.save(journey);
     }
