@@ -28,4 +28,8 @@ public class ChattingRoom {
         this.createdAt = createdAt;
         this.chattingCollection = chattingCollection;
     }
+
+    public static ChattingRoom mapFromDto(){
+        return ChattingRoom.builder().build();
+    }
 }

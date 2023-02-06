@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tripmeeting.com.tripmeeting.domain.type.ErrorResponse;
+import tripmeeting.com.tripmeeting.exception.exception.BadlyFormedError;
 
 import java.util.Objects;
 
@@ -21,6 +22,14 @@ public class GlobalExceptionHandler {
         log.warn("Method Argument Is Not Valid", e);
         String message = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
         assert message != null;
+        ErrorResponse response = new ErrorResponse(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(BadlyFormedError.class)
+    public ResponseEntity<ErrorResponse> handleBadlyFormedException(BadlyFormedError e){
+        log.error("Badly formed", e);
+        String message = e.getMessage();
         ErrorResponse response = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
