@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tripmeeting.com.tripmeeting.controller.plan.dto.CreatePlanDto;
 import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 
 
@@ -48,7 +49,8 @@ public class Plan {
     }
 
     @Builder
-    public Plan(String id, String name, double latitude, double longitude, String tagId, int day, int turn, JourneyStatus status){
+    public Plan(String id, String name, double latitude, double longitude, String tagId, int day,
+                int turn, Journey journey,JourneyStatus status){
         this.id = id;
         this.name = name;
         this.latitude = latitude;
@@ -57,6 +59,18 @@ public class Plan {
         this.day = day;
         this.turn = turn;
         this.status = status;
+        this.journey = journey;
+    }
 
+    public static Plan mapFromRelation(CreatePlanDto dto, Journey journey){
+        return Plan.builder()
+                .name(dto.getName())
+                .day(dto.getDay())
+                .name(dto.getName())
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
+                .status(JourneyStatus.okay)
+                .journey(journey)
+                .build();
     }
 }

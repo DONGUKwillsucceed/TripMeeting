@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tripmeeting.com.tripmeeting.domain.entity.Plan;
+import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +36,9 @@ public class PlanDto {
     public static Set<PlanDto> mapFromRelation(List<Plan> plans){
         Set<PlanDto> dtos = new HashSet<>();
         for(Plan plan : plans){
+            if(plan.getStatus() != JourneyStatus.okay)
+                continue;
+
             PlanDto dto = PlanDto.builder()
                     .id(plan.getId())
                     .name(plan.getName())
