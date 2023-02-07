@@ -49,7 +49,7 @@ public class UserService {
         if(user == null) throw new NotFoundError("user not found");
 
         List<UserImage> profileImages = new ArrayList<>();
-        for (UserImage userImage : user.userImages) {
+        for (UserImage userImage : user.getUserImages()) {
             if(userImage.getIsDeleted() == 1)
                 continue;
 

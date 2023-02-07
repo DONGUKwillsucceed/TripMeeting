@@ -31,7 +31,7 @@ public class MemberDto {
             MemberDto dto = MemberDto.builder()
                     .id(user.getId())
                     .name(user.getName())
-                    .profileImageUrl(user.getUserImages().stream().map(UserImage::getUrl).toString())
+                    .profileImageUrl(user.getUserImages().stream().map(UserImage::getUrl).findFirst().get())
                     .build();
 
             members.add(dto);

@@ -7,6 +7,7 @@ import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyDto;
 import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyLineDto;
 import tripmeeting.com.tripmeeting.controller.journey.dto.PatchJourneyDto;
 import tripmeeting.com.tripmeeting.domain.entity.*;
+import tripmeeting.com.tripmeeting.domain.service.S3Service;
 import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
 import tripmeeting.com.tripmeeting.exception.exception.NotFoundError;
 import tripmeeting.com.tripmeeting.exception.exception.UnAuthorizationError;
@@ -27,23 +28,34 @@ public class JourneyService {
     private final AreaCodeRepository areaCodeRepository;
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
     private final UserChattingRoomRepository userChattingRoomRepository;
     public JourneyService(JourneyRepository journeyRepository,
                           AreaCodeRepository areaCodeRepository,
                           ChattingRoomRepository chattingRoomRepository,
                           UserRepository userRepository,
-                          UserChattingRoomRepository userChattingRoomRepository
+                          UserChattingRoomRepository userChattingRoomRepository,
+                          S3Service s3Service
                             ){
         this.journeyRepository = journeyRepository;
         this.areaCodeRepository = areaCodeRepository;
         this.chattingRoomRepository = chattingRoomRepository;
         this.userRepository = userRepository;
         this.userChattingRoomRepository = userChattingRoomRepository;
+        this.s3Service = s3Service;
     }
 
     public JourneyDto findUnique(String journeyId) throws NotFoundError {
         Journey journey = journeyRepository.findJourneyById(journeyId);
         if(journey == null) throw new NotFoundError("journey not found");
+        for (UserImage userImage : journey.getUser().getUserImages()) {
+            if(userImage.getIsDeleted() == 1)
+                continue;
+
+            String url = s3Service.getObjectUrl(userImage.getUrl());
+            userImage.signImageUrl(url);
+        }
+
 
         return JourneyDto.mapFromRelation(journey);
     }
@@ -51,12 +63,13 @@ public class JourneyService {
     public Set<JourneyLineDto> findMany(String areaCode, String search) throws NotFoundError {
         AreaCode areaCode1 = areaCodeRepository.findAreaCodeByAreaCode(areaCode);
         if(areaCode1 == null) throw new NotFoundError("area code not found");
-
+        List<Journey> journeys;
         if(search != null){
-            List<Journey> journeys = journeyRepository.findJourneysByAreaCodeAndTitleContainingAndStatus(areaCode1, search, JourneyStatus.okay);
-            return JourneyLineDto.mapFromRelation(journeys);
+            journeys = journeyRepository.findJourneysByAreaCodeAndTitleContainingAndStatus(areaCode1, search, JourneyStatus.okay);
+        } else {
+            journeys = journeyRepository.findJourneysByAreaCodeAndStatus(areaCode1, JourneyStatus.okay);
         }
-        List<Journey> journeys = journeyRepository.findJourneysByAreaCodeAndStatus(areaCode1, JourneyStatus.okay);
+
         return JourneyLineDto.mapFromRelation(journeys);
     }
 

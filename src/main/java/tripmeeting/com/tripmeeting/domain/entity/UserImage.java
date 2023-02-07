@@ -38,6 +38,10 @@ public class UserImage {
     public void updateUser(User user){
         this.user = user;
     }
+
+    public void signImageUrl(String url){
+        this.url = url;
+    }
     public void delete(){
         this.isDeleted = 1;
     }
