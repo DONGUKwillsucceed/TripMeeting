@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tripmeeting.com.tripmeeting.domain.type.ErrorResponse;
-import tripmeeting.com.tripmeeting.exception.exception.BadlyFormedError;
-import tripmeeting.com.tripmeeting.exception.exception.NotFoundError;
-import tripmeeting.com.tripmeeting.exception.exception.UnAuthorizationError;
+import tripmeeting.com.tripmeeting.exception.exception.BadlyFormedException;
+import tripmeeting.com.tripmeeting.exception.exception.NotFoundException;
+import tripmeeting.com.tripmeeting.exception.exception.UnAuthorizationException;
 
 import java.util.Objects;
 
@@ -28,24 +28,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(BadlyFormedError.class)
-    public ResponseEntity<ErrorResponse> handleBadlyFormedException(BadlyFormedError e){
+    @ExceptionHandler(BadlyFormedException.class)
+    public ResponseEntity<ErrorResponse> handleBadlyFormedException(BadlyFormedException e){
         log.error("Badly formed", e);
         String message = e.getMessage();
         ErrorResponse response = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(UnAuthorizationError.class)
-    public ResponseEntity<ErrorResponse> handleUnAuthorizationError(UnAuthorizationError e){
+    @ExceptionHandler(UnAuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleUnAuthorizationError(UnAuthorizationException e){
         log.error("UnAuthorization error", e);
         String message = e.getMessage();
         ErrorResponse response = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
-    @ExceptionHandler(NotFoundError.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundError(NotFoundError e){
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundError(NotFoundException e){
         log.error("Not found error", e);
         String message = e.getMessage();
         ErrorResponse response = new ErrorResponse(message);

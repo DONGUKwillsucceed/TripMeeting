@@ -5,10 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tripmeeting.com.tripmeeting.domain.entity.User;
+import tripmeeting.com.tripmeeting.domain.entity.UserChattingRoom;
 import tripmeeting.com.tripmeeting.domain.entity.UserImage;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,9 +26,12 @@ public class MemberDto {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public static Set<MemberDto> mapFromRelation(List<User> users){
+    public static Set<MemberDto> mapFromRelation(Collection<UserChattingRoom> userChattingRooms){
         Set<MemberDto> members = new HashSet<>();
-        for(User user : users){
+        for(UserChattingRoom userChattingRoom : userChattingRooms){
+            if(userChattingRoom.getIsDeleted() == 1) continue;
+
+            User user = userChattingRoom.getUser();
             MemberDto dto = MemberDto.builder()
                     .id(user.getId())
                     .name(user.getName())

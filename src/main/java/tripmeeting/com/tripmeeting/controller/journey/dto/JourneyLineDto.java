@@ -51,7 +51,7 @@ public class JourneyLineDto {
                             journey.getImage() != null ? journey.getImage().getUrl() : null
                     )
                     .max(journey.getCrewCapacity())
-                    .members(MemberDto.mapFromRelation(journey.getChattingRoom().getUsers()))
+                    .members(MemberDto.mapFromRelation(journey.getChattingRoom().getUserChattingRoomCollection()))
                     .build();
 
             dtos.add(dto);

@@ -8,7 +8,7 @@ import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
 import tripmeeting.com.tripmeeting.controller.user.dto.UserDto;
 import tripmeeting.com.tripmeeting.domain.entity.*;
 import tripmeeting.com.tripmeeting.domain.service.S3Service;
-import tripmeeting.com.tripmeeting.exception.exception.NotFoundError;
+import tripmeeting.com.tripmeeting.exception.exception.NotFoundException;
 import tripmeeting.com.tripmeeting.repository.area_code.AreaCodeRepository;
 import tripmeeting.com.tripmeeting.repository.hobby.HobbyRepository;
 import tripmeeting.com.tripmeeting.repository.image.ImageRepository;
@@ -44,9 +44,9 @@ public class UserService {
         this.s3Service = s3Service;
     }
 
-    public UserDto findUnique(String userId) throws NotFoundError {
+    public UserDto findUnique(String userId) throws NotFoundException {
         User user = userRepository.findUserById(userId);
-        if(user == null) throw new NotFoundError("user not found");
+        if(user == null) throw new NotFoundException("user not found");
 
         List<UserImage> profileImages = new ArrayList<>();
         for (UserImage userImage : user.getUserImages()) {
@@ -61,21 +61,21 @@ public class UserService {
         return UserDto.mapFromRelation(user, profileImages);
     }
 
-    public void createProfileImage(String userId, CreateProfileImageDto dto) throws NotFoundError {
+    public void createProfileImage(String userId, CreateProfileImageDto dto) throws NotFoundException {
         UserImage image = imageRepository.findUserImageById(dto.getId());
-        if(image == null) throw new NotFoundError("image not found");
+        if(image == null) throw new NotFoundException("image not found");
 
         User user = userRepository.findUserById(userId);
         image.updateUser(user);
         imageRepository.save(image);
     }
 
-    public void create(CreateUserDto dto) throws NotFoundError {
+    public void create(CreateUserDto dto) throws NotFoundException {
         AreaCode areaCode = areaCodeRepository.findAreaCodeByAreaCode(dto.getAreaCode());
         Job job = jobRepository.findJobById(dto.getJobId());
 
-        if(areaCode == null) throw new NotFoundError("area code not found");
-        if(job == null) throw new NotFoundError("job not found");
+        if(areaCode == null) throw new NotFoundException("area code not found");
+        if(job == null) throw new NotFoundException("job not found");
 
         List<UserImage> images = imageRepository.findAllById(dto.getProfileImageIds());
         Set<Hobby> hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
@@ -87,13 +87,13 @@ public class UserService {
         }
     }
 
-    public void patch(String userId, PatchUserDto dto) throws NotFoundError {
+    public void patch(String userId, PatchUserDto dto) throws NotFoundException {
         Set<Hobby> hobbies = null;
         User user = userRepository.findUserById(userId);
         Job job = jobRepository.findJobById(dto.getJobId());
 
-        if(user == null) throw new NotFoundError("user not found");
-        if(job == null) throw new NotFoundError("job not found");
+        if(user == null) throw new NotFoundException("user not found");
+        if(job == null) throw new NotFoundException("job not found");
 
         if(dto.getHobbyIds() != null)
             hobbies = new HashSet<>(hobbyRepository.findAllById(dto.getHobbyIds()));
@@ -102,17 +102,17 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void delete(String userId) throws NotFoundError {
+    public void delete(String userId) throws NotFoundException {
         User user = userRepository.findUserById(userId);
-        if(user == null) throw new NotFoundError("user not found");
+        if(user == null) throw new NotFoundException("user not found");
 
         user.delete();
         userRepository.save(user);
     }
 
-    public void deleteProfileImage(String imageId) throws NotFoundError {
+    public void deleteProfileImage(String imageId) throws NotFoundException {
         UserImage image = imageRepository.findUserImageById(imageId);
-        if(image == null) throw new NotFoundError("image not found");
+        if(image == null) throw new NotFoundException("image not found");
 
         image.delete();
         imageRepository.save(image);

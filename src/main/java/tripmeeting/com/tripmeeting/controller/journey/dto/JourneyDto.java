@@ -54,7 +54,7 @@ public class JourneyDto {
                         journey.getImage() != null ? journey.getImage().getUrl() : null
                 )
                 .userId(journey.getUser().getId())
-                .members(MemberDto.mapFromRelation(journey.getChattingRoom().getUsers()))
+                .members(MemberDto.mapFromRelation(journey.getChattingRoom().getUserChattingRoomCollection()))
                 .plans(PlanDto.mapFromRelation((List<Plan>) journey.getPlans()))
                 .build();
     }

@@ -25,6 +25,10 @@ public class UserChattingRoom {
     @ManyToOne(targetEntity = ChattingRoom.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "chatting_room_id")
     ChattingRoom chattingRoom;
+
+    public void delete(){
+        this.isDeleted = 1;
+    }
     @Builder
     public UserChattingRoom(long id, User user, ChattingRoom chattingRoom,byte isDeleted){
         this.id = id;

@@ -2,15 +2,12 @@ package tripmeeting.com.tripmeeting.service.journey;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tripmeeting.com.tripmeeting.controller.journey.dto.CreateJourneyDto;
-import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyDto;
-import tripmeeting.com.tripmeeting.controller.journey.dto.JourneyLineDto;
-import tripmeeting.com.tripmeeting.controller.journey.dto.PatchJourneyDto;
+import tripmeeting.com.tripmeeting.controller.journey.dto.*;
 import tripmeeting.com.tripmeeting.domain.entity.*;
 import tripmeeting.com.tripmeeting.domain.service.S3Service;
 import tripmeeting.com.tripmeeting.domain.type.JourneyStatus;
-import tripmeeting.com.tripmeeting.exception.exception.NotFoundError;
-import tripmeeting.com.tripmeeting.exception.exception.UnAuthorizationError;
+import tripmeeting.com.tripmeeting.exception.exception.NotFoundException;
+import tripmeeting.com.tripmeeting.exception.exception.UnAuthorizationException;
 import tripmeeting.com.tripmeeting.repository.area_code.AreaCodeRepository;
 import tripmeeting.com.tripmeeting.repository.chattng_room.ChattingRoomRepository;
 import tripmeeting.com.tripmeeting.repository.chattng_room.UserChattingRoomRepository;
@@ -45,9 +42,9 @@ public class JourneyService {
         this.s3Service = s3Service;
     }
 
-    public JourneyDto findUnique(String journeyId) throws NotFoundError {
+    public JourneyDto findUnique(String journeyId) throws NotFoundException {
         Journey journey = journeyRepository.findJourneyById(journeyId);
-        if(journey == null) throw new NotFoundError("journey not found");
+        if(journey == null) throw new NotFoundException("journey not found");
         for (UserImage userImage : journey.getUser().getUserImages()) {
             if(userImage.getIsDeleted() == 1)
                 continue;
@@ -60,9 +57,9 @@ public class JourneyService {
         return JourneyDto.mapFromRelation(journey);
     }
 
-    public Set<JourneyLineDto> findMany(String areaCode, String search) throws NotFoundError {
+    public Set<JourneyLineDto> findMany(String areaCode, String search) throws NotFoundException {
         AreaCode areaCode1 = areaCodeRepository.findAreaCodeByAreaCode(areaCode);
-        if(areaCode1 == null) throw new NotFoundError("area code not found");
+        if(areaCode1 == null) throw new NotFoundException("area code not found");
         List<Journey> journeys;
         if(search != null){
             journeys = journeyRepository.findJourneysByAreaCodeAndTitleContainingAndStatus(areaCode1, search, JourneyStatus.okay);
@@ -73,12 +70,12 @@ public class JourneyService {
         return JourneyLineDto.mapFromRelation(journeys);
     }
 
-    public void create(CreateJourneyDto dto) throws NotFoundError {
+    public void create(CreateJourneyDto dto) throws NotFoundException {
         User user = userRepository.findUserById(dto.getUserId());
         AreaCode areaCode = areaCodeRepository.findAreaCodeByAreaCode(dto.getAreaCode());
 
-        if(user == null) throw new NotFoundError("user not found");
-        if(areaCode == null) throw new NotFoundError("area code not found");
+        if(user == null) throw new NotFoundException("user not found");
+        if(areaCode == null) throw new NotFoundException("area code not found");
 
         ChattingRoom chattingRoom = chattingRoomRepository.save(ChattingRoom.mapFromDto());
         Journey journey = Journey.mapFromDto(dto, areaCode, chattingRoom, user, null);
@@ -87,23 +84,60 @@ public class JourneyService {
         userChattingRoomRepository.save(UserChattingRoom.mapFromRelation(user, chattingRoom));
     }
 
-    public void patch(String journeyId, PatchJourneyDto dto) throws UnAuthorizationError, NotFoundError {
+    public void join(String journeyId, JoinJourneyDto dto) throws UnAuthorizationException {
+        User user = userRepository.findUserById(dto.getUserId());
         Journey journey = journeyRepository.findJourneyById(journeyId);
-        if(journey == null) throw new NotFoundError("journey not found");
+        if(journey.getPassword() != dto.getPassword())
+            throw new UnAuthorizationException("no auth to join");
+
+        ChattingRoom chattingRoom = journey.getChattingRoom();
+
+        userChattingRoomRepository.save(UserChattingRoom.mapFromRelation(user, chattingRoom));
+    }
+
+    public void quit(String journeyId, QuitJourneyDto dto) throws NotFoundException {
+        Journey journey = journeyRepository.findJourneyById(journeyId);
+        User user = userRepository.findUserById(dto.getUserId());
+
+        if(journey == null) throw new NotFoundException("journey not found");
+        if(user == null) throw new NotFoundException("user not found");
+
+        UserChattingRoom userChattingRoom = userChattingRoomRepository.findUserChattingRoomByChattingRoomAndUser(journey.getChattingRoom(), user);
+        userChattingRoom.delete();
+        userChattingRoomRepository.save(userChattingRoom);
+    }
+
+    public void fire(String journeyId, String memberId, QuitJourneyDto dto) throws UnAuthorizationException, NotFoundException {
+        Journey journey = journeyRepository.findJourneyById(journeyId);
+        User user = userRepository.findUserById(memberId);
+
+        if(journey == null) throw new NotFoundException("journey not found");
+        if(user == null) throw new NotFoundException("user not found");
+
+        if(!journey.getUser().getId().equals(dto.getUserId())) throw new UnAuthorizationException("no auth to fire");
+
+        UserChattingRoom userChattingRoom = userChattingRoomRepository.findUserChattingRoomByChattingRoomAndUser(journey.getChattingRoom(), user);
+        userChattingRoom.delete();
+        userChattingRoomRepository.save(userChattingRoom);
+    }
+
+    public void patch(String journeyId, PatchJourneyDto dto) throws UnAuthorizationException, NotFoundException {
+        Journey journey = journeyRepository.findJourneyById(journeyId);
+        if(journey == null) throw new NotFoundException("journey not found");
 
         if(!dto.getUserId().equals(journey.getUser().getId())) {
             log.info(dto.getUserId());
             log.info(journey.getUser().getId());
-            throw new UnAuthorizationError("No Auth to patch");
+            throw new UnAuthorizationException("No Auth to patch");
         }
 
         journey.patch(dto);
         journeyRepository.save(journey);
     }
 
-    public void delete(String journeyId) throws NotFoundError {
+    public void delete(String journeyId) throws NotFoundException {
         Journey journey = journeyRepository.findJourneyById(journeyId);
-        if(journey == null) throw new NotFoundError("journey not found");
+        if(journey == null) throw new NotFoundException("journey not found");
 
         ArrayList<Plan> plans = (ArrayList<Plan>) journey.getPlans();
 

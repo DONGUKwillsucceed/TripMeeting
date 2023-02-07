@@ -25,6 +25,9 @@ public class ChattingRoom {
     @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.LAZY)
     public Collection<Chatting> chattingCollection;
 
+    @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.EAGER)
+    public Collection<UserChattingRoom> userChattingRoomCollection;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "User_Chatting_Room",
             joinColumns = {@JoinColumn(name = "chatting_room_id")},
