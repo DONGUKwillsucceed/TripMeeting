@@ -4,10 +4,8 @@ import org.springframework.stereotype.Service;
 import tripmeeting.com.tripmeeting.controller.chatting_room.dto.ChattingDto;
 import tripmeeting.com.tripmeeting.controller.chatting_room.dto.ChattingRoomDto;
 import tripmeeting.com.tripmeeting.controller.chatting_room.dto.CreateChattingRoomDto;
-import tripmeeting.com.tripmeeting.domain.entity.Chatting;
-import tripmeeting.com.tripmeeting.domain.entity.ChattingRoom;
-import tripmeeting.com.tripmeeting.domain.entity.User;
-import tripmeeting.com.tripmeeting.domain.entity.UserChattingRoom;
+import tripmeeting.com.tripmeeting.domain.entity.*;
+import tripmeeting.com.tripmeeting.domain.service.S3Service;
 import tripmeeting.com.tripmeeting.exception.exception.NotFoundException;
 import tripmeeting.com.tripmeeting.repository.chattng_room.ChattingRepository;
 import tripmeeting.com.tripmeeting.repository.chattng_room.ChattingRoomRepository;
@@ -22,16 +20,18 @@ public class ChattingRoomService {
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserChattingRoomRepository userChattingRoomRepository;
     private final ChattingRepository chattingRepository;
-
+    private final S3Service s3Service;
     private final UserRepository userRepository;
     public ChattingRoomService(ChattingRoomRepository chattingRoomRepository,
                                UserChattingRoomRepository userChattingRoomRepository,
                                ChattingRepository chattingRepository,
-                               UserRepository userRepository){
+                               UserRepository userRepository,
+                               S3Service s3Service){
         this.chattingRoomRepository = chattingRoomRepository;
         this.userChattingRoomRepository = userChattingRoomRepository;
         this.chattingRepository = chattingRepository;
         this.userRepository = userRepository;
+        this.s3Service = s3Service;
     }
 
     public Set<ChattingRoomDto> findMany(String userId) throws NotFoundException {
@@ -41,6 +41,16 @@ public class ChattingRoomService {
 
         List<UserChattingRoom> userChattingRooms =
                 userChattingRoomRepository.findUserChattingRoomsByUserAndIsDeleted(user, 0);
+
+        for(UserChattingRoom userChattingRoom : userChattingRooms){
+            for(UserImage userImage : userChattingRoom.getUser().getUserImages()){
+                if(userImage.getIsDeleted() == 1) continue;
+
+                String url = s3Service.getObjectUrl(userImage.getUrl());
+                userImage.signImageUrl(url);
+            }
+        }
+
         List<ChattingRoom> chattingRooms =
                 chattingRoomRepository.findChattingRoomsByUserChattingRoomCollectionIn(userChattingRooms);
 
@@ -53,6 +63,17 @@ public class ChattingRoomService {
 
         if(user == null) throw new NotFoundException("user not found");
         if(chattingRoom == null) throw new NotFoundException("chatting room not found");
+
+        for(Chatting chatting : chattingRoom.chattingCollection){
+            if(chatting.getIsDeleted() == 1) continue;
+
+            for(UserImage userImage : chatting.getUser().getUserImages()) {
+                if(userImage.getIsDeleted() == 1) continue;
+
+                String url = s3Service.getObjectUrl(userImage.getUrl());
+                userImage.signImageUrl(url);
+            }
+        }
 
         return ChattingDto.mapFromRelation((List<Chatting>) chattingRoom.chattingCollection);
     }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tripmeeting.com.tripmeeting.controller.journey.dto.MemberDto;
 import tripmeeting.com.tripmeeting.domain.entity.ChattingRoom;
+import tripmeeting.com.tripmeeting.domain.entity.Journey;
 
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,9 @@ public class ChattingRoomDto {
             ChattingRoomDto dto = builder()
                     .id(chattingRoom.getId())
                     .members(MemberDto.mapFromRelation(chattingRoom.getUserChattingRoomCollection()))
-                    .journeyId(chattingRoom.getJourneys().iterator().next().getId())
+                    .journeyId(
+                            chattingRoom.getJourneys().stream().map(Journey::getId).findFirst().isPresent() ?
+                                    chattingRoom.getJourneys().stream().map(Journey::getId).findFirst().get() : null)
                     .build();
 
             dtos.add(dto);

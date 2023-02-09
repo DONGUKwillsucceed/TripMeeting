@@ -35,7 +35,10 @@ public class MemberDto {
             MemberDto dto = MemberDto.builder()
                     .id(user.getId())
                     .name(user.getName())
-                    .profileImageUrl(user.getUserImages().stream().map(UserImage::getUrl).findFirst().get())
+                    .profileImageUrl(
+                            user.getUserImages().stream().map(UserImage::getUrl).findFirst().isPresent() ?
+                                    user.getUserImages().stream().map(UserImage::getUrl).findFirst().get() : ""
+                    )
                     .build();
 
             members.add(dto);
@@ -47,7 +50,10 @@ public class MemberDto {
             return MemberDto.builder()
                     .id(user.getId())
                     .name(user.getName())
-                    .profileImageUrl(user.getUserImages().stream().map(UserImage::getUrl).findFirst().get())
+                    .profileImageUrl(
+                            user.getUserImages().stream().map(UserImage::getUrl).findFirst().isPresent() ?
+                                    user.getUserImages().stream().map(UserImage::getUrl).findFirst().get() : ""
+                    )
                     .build();
     }
 }
