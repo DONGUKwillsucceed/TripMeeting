@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, String> {
-    List<ChattingRoom> findChattingRoomsByUserChattingRoomCollection(Collection<UserChattingRoom> userChattingRooms);
+    List<ChattingRoom> findChattingRoomsByUserChattingRoomCollectionIn(Collection<UserChattingRoom> userChattingRooms);
 
     ChattingRoom findChattingRoomById(String roomId);
 }

@@ -22,6 +22,10 @@ public class Chatting {
     @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
+
+    @Basic
+    @Column(name = "is_deleted")
+    private int isDeleted;
     @Basic
     @Column(name = "updated_at")
     private Timestamp updatedAt;
@@ -32,11 +36,16 @@ public class Chatting {
     @ManyToOne(targetEntity = ChattingRoom.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "chatting_room_id")
     public ChattingRoom chattingRoom;
+
+    public void delete(){
+        this.isDeleted = 1;
+    }
     @Builder
     public Chatting(String id, String content, User user, ChattingRoom chattingRoom,Timestamp createdAt, Timestamp updatedAt){
         this.id = id;
         this.content = content;
         this.user = user;
+        this.isDeleted = 0;
         this.chattingRoom = chattingRoom;
         this.createdAt = createdAt;
         this.updatedAt =updatedAt;

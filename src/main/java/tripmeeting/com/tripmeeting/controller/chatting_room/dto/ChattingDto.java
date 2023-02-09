@@ -1,9 +1,10 @@
-package tripmeeting.com.tripmeeting.controller.chatting.dto;
+package tripmeeting.com.tripmeeting.controller.chatting_room.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tripmeeting.com.tripmeeting.controller.journey.dto.MemberDto;
 import tripmeeting.com.tripmeeting.domain.entity.Chatting;
 
 import java.sql.Timestamp;
@@ -18,25 +19,28 @@ public class ChattingDto {
     String content;
     String imageUrl;
     Timestamp createdAt;
-    String userId;
+    MemberDto memberDto;
 
     @Builder
-    public ChattingDto(String id, String content, String imageUrl, Timestamp createdAt, String userId){
+    public ChattingDto(String id, String content, String imageUrl, Timestamp createdAt, MemberDto memberDto){
         this.id = id;
         this.content = content;
         this.imageUrl = imageUrl;
         this.createdAt = createdAt;
-        this.userId = userId;
+        this.memberDto = memberDto;
     }
 
     public static Set<ChattingDto> mapFromRelation(List<Chatting> chattings){
         Set<ChattingDto> dtos = new HashSet<>();
         for(Chatting chatting : chattings){
+            if(chatting.getIsDeleted() == 1)
+                continue;
+
             ChattingDto dto = builder().id(chatting.getId())
                     .content(chatting.getContent())
                     .imageUrl(null)
                     .createdAt(chatting.getCreatedAt())
-                    .userId(chatting.getUser().getId())
+                    .memberDto(MemberDto.mapFromRelationForChatting(chatting.getUser()))
                     .build();
             dtos.add(dto);
         }

@@ -1,8 +1,10 @@
-package tripmeeting.com.tripmeeting.service.chatting;
+package tripmeeting.com.tripmeeting.service.chatting_room;
 
 import org.springframework.stereotype.Service;
-import tripmeeting.com.tripmeeting.controller.chatting.dto.ChattingRoomDto;
-import tripmeeting.com.tripmeeting.controller.chatting.dto.CreateChattingRoomDto;
+import tripmeeting.com.tripmeeting.controller.chatting_room.dto.ChattingDto;
+import tripmeeting.com.tripmeeting.controller.chatting_room.dto.ChattingRoomDto;
+import tripmeeting.com.tripmeeting.controller.chatting_room.dto.CreateChattingRoomDto;
+import tripmeeting.com.tripmeeting.domain.entity.Chatting;
 import tripmeeting.com.tripmeeting.domain.entity.ChattingRoom;
 import tripmeeting.com.tripmeeting.domain.entity.User;
 import tripmeeting.com.tripmeeting.domain.entity.UserChattingRoom;
@@ -37,11 +39,22 @@ public class ChattingRoomService {
 
         if(user == null) throw new NotFoundException("user not found");
 
-        List<UserChattingRoom> userChattingRooms = userChattingRoomRepository.findUserChattingRoomsByUser(user);
+        List<UserChattingRoom> userChattingRooms =
+                userChattingRoomRepository.findUserChattingRoomsByUserAndIsDeleted(user, 0);
         List<ChattingRoom> chattingRooms =
-                chattingRoomRepository.findChattingRoomsByUserChattingRoomCollection(userChattingRooms);
+                chattingRoomRepository.findChattingRoomsByUserChattingRoomCollectionIn(userChattingRooms);
 
         return ChattingRoomDto.mapFromRelation(chattingRooms);
+    }
+
+    public Set<ChattingDto> findManyForChatting(String userId, String roomId) throws NotFoundException {
+        User user = userRepository.findUserById(userId);
+        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(roomId);
+
+        if(user == null) throw new NotFoundException("user not found");
+        if(chattingRoom == null) throw new NotFoundException("chatting room not found");
+
+        return ChattingDto.mapFromRelation((List<Chatting>) chattingRoom.chattingCollection);
     }
 
     public void create(String userId, CreateChattingRoomDto dto) throws NotFoundException {
@@ -72,5 +85,21 @@ public class ChattingRoomService {
         userChattingRoom.delete();
         userChattingRoomRepository.save(userChattingRoom);
     }
+
+    public void deleteForChatting(String userId, String roomId, String chattingId) throws NotFoundException {
+        User user = userRepository.findUserById(userId);
+        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(roomId);
+
+        if(user == null) throw new NotFoundException("user not found");
+        if(chattingRoom == null) throw new NotFoundException("chatting room not found");
+
+        Chatting chatting = chattingRepository.findChattingByUserAndChattingRoomAndId(user, chattingRoom, chattingId);
+
+        if(chatting == null) throw new NotFoundException("chatting not found");
+
+        chatting.delete();
+        chattingRepository.save(chatting);
+    }
+
 
 }

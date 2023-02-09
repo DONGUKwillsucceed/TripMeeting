@@ -42,4 +42,12 @@ public class MemberDto {
         }
         return members;
     }
+
+    public static MemberDto mapFromRelationForChatting(User user){
+            return MemberDto.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .profileImageUrl(user.getUserImages().stream().map(UserImage::getUrl).findFirst().get())
+                    .build();
+    }
 }

@@ -1,4 +1,4 @@
-package tripmeeting.com.tripmeeting.controller.chatting.dto;
+package tripmeeting.com.tripmeeting.controller.chatting_room.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

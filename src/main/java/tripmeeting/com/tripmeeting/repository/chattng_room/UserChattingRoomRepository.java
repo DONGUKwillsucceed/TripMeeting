@@ -10,5 +10,5 @@ import java.util.List;
 public interface UserChattingRoomRepository extends JpaRepository<UserChattingRoom, Long> {
     UserChattingRoom findUserChattingRoomByChattingRoomAndUser(ChattingRoom chattingRoom, User user);
 
-    List<UserChattingRoom> findUserChattingRoomsByUser(User user);
+    List<UserChattingRoom> findUserChattingRoomsByUserAndIsDeleted(User user, int isDeleted);
 }
