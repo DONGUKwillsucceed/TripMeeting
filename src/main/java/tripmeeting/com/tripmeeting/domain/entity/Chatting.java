@@ -17,8 +17,8 @@ public class Chatting {
     @Column(name = "id")
     private String id;
     @Basic
-    @Column(name = "name")
-    private String name;
+    @Column(name = "content")
+    private String content;
     @Basic
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -33,9 +33,9 @@ public class Chatting {
     @JoinColumn(name = "chatting_room_id")
     public ChattingRoom chattingRoom;
     @Builder
-    public Chatting(String id, String name, User user, ChattingRoom chattingRoom,Timestamp createdAt, Timestamp updatedAt){
+    public Chatting(String id, String content, User user, ChattingRoom chattingRoom,Timestamp createdAt, Timestamp updatedAt){
         this.id = id;
-        this.name = name;
+        this.content = content;
         this.user = user;
         this.chattingRoom = chattingRoom;
         this.createdAt = createdAt;

@@ -25,6 +25,9 @@ public class ChattingRoom {
     @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.LAZY)
     public Collection<Chatting> chattingCollection;
 
+    @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.LAZY)
+    public Collection<Journey> journeys;
+
     @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.EAGER)
     public Collection<UserChattingRoom> userChattingRoomCollection;
 
@@ -34,10 +37,11 @@ public class ChattingRoom {
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private final List<User> users = new ArrayList<>();
     @Builder
-    public ChattingRoom(String id, Collection<Chatting> chattingCollection,Timestamp createdAt){
+    public ChattingRoom(String id, Collection<Chatting> chattingCollection,Timestamp createdAt, Collection<Journey> journeys){
         this.id = id;
         this.createdAt = createdAt;
         this.chattingCollection = chattingCollection;
+        this.journeys = journeys;
     }
 
     public static ChattingRoom mapFromDto(){
