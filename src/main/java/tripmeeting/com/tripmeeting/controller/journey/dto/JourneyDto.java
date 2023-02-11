@@ -22,7 +22,7 @@ public class JourneyDto {
 
     String userId;
 
-    boolean isLocked;
+    boolean locked;
 
     Date endDate;
     int max;
@@ -33,7 +33,7 @@ public class JourneyDto {
 
     @Builder
     public JourneyDto(String id, String name, String imageUrl, Date startDate,
-                      String userId, Date endDate, int max, boolean isLocked,Set<MemberDto> members, Set<PlanDto> plans){
+                      String userId, Date endDate, int max, boolean locked,Set<MemberDto> members, Set<PlanDto> plans){
         this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
@@ -43,7 +43,7 @@ public class JourneyDto {
         this.max = max;
         this.members = members;
         this.plans = plans;
-        this.isLocked = isLocked;
+        this.locked = locked;
     }
 
     public static JourneyDto mapFromRelation(Journey journey){
@@ -57,7 +57,7 @@ public class JourneyDto {
                         journey.getImage() != null ? journey.getImage().getUrl() : null
                 )
                 .userId(journey.getUser().getId())
-                .isLocked(
+                .locked(
                         journey.getPassword() != null ? true : false
                 )
                 .members(MemberDto.mapFromRelation(journey.getChattingRoom().getUserChattingRoomCollection()))
