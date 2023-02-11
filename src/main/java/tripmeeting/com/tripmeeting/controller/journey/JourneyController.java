@@ -36,9 +36,9 @@ public class JourneyController {
         journeyService.create(dto);
     }
 
-    @PostMapping("{journeyId}/join")
-    public void join(@PathVariable("journeyId") String journeyId, @Valid @RequestBody JoinJourneyDto dto) throws UnAuthorizationException {
-        journeyService.join(journeyId, dto);
+    @PostMapping("{journeyId}/verify-password")
+    public VerifyPasswordResponseDto join(@PathVariable("journeyId") String journeyId, @Valid @RequestBody VerifyPasswordRequestDto dto) {
+        return journeyService.verify(journeyId, dto);
     }
 
     @PostMapping("{journeyId}/quit")

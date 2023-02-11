@@ -22,24 +22,24 @@ public class ChattingController{
     @MessageMapping("/add-chatting")
     public void addChatting(@Valid SendMessageDto dto) throws NotFoundException {
         ChattingDto data = chattingRoomService.createForChatting(dto);
-        simpMessagingTemplate.convertAndSend("chatting/room/" + dto.getRoomId() + "add-chatting", data);
+        simpMessagingTemplate.convertAndSend("/chatting/room/" + dto.getRoomId() + "add-chatting", data);
     }
 
     @MessageMapping("/delete-chatting")
     public void deleteChatting(@Valid DeleteChattingDto dto) throws NotFoundException {
         Chatting data = chattingRoomService.deleteForChatting(dto);
-        simpMessagingTemplate.convertAndSend("chatting/room/" + dto.getRoomId() + "delete-chatting", data);
+        simpMessagingTemplate.convertAndSend("/chatting/room/" + dto.getRoomId() + "delete-chatting", data);
     }
 
     @MessageMapping("add-user")
     public void addUser(@Valid AddUserDto dto){
         MemberDto data = chattingRoomService.addUser(dto);
-        simpMessagingTemplate.convertAndSend("chatting/room/" + dto.getRoomId() + "add-user", data);
+        simpMessagingTemplate.convertAndSend("/chatting/room/" + dto.getRoomId() + "add-user", data);
     }
 
     @MessageMapping("exit-user")
     public void exitUser(@Valid ExitChattingRoomDto dto) throws NotFoundException {
         MemberDto data = chattingRoomService.deleteUser(dto);
-        simpMessagingTemplate.convertAndSend("chatting/room/" + dto.getRoomId() + "exit-user", data);
+        simpMessagingTemplate.convertAndSend("/chatting/room/" + dto.getRoomId() + "exit-user", data);
     }
 }

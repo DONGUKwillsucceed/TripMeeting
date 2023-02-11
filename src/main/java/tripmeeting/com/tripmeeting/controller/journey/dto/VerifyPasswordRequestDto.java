@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JoinJourneyDto {
-    @NotEmpty(message = "user id necessary")
-    String userId;
-    String password;
+public class VerifyPasswordRequestDto {
 
-    @NotEmpty(message = "journey id necessary")
-    String journeyId;
+    @NotEmpty(message = "pass word necessary")
+    String password;
 }

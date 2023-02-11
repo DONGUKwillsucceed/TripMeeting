@@ -84,15 +84,15 @@ public class JourneyService {
         userChattingRoomRepository.save(UserChattingRoom.mapFromRelation(user, chattingRoom));
     }
 
-    public void join(String journeyId, JoinJourneyDto dto) throws UnAuthorizationException {
-        User user = userRepository.findUserById(dto.getUserId());
+    public VerifyPasswordResponseDto verify(String journeyId, VerifyPasswordRequestDto dto) {
         Journey journey = journeyRepository.findJourneyById(journeyId);
+
+        VerifyPasswordResponseDto result = new VerifyPasswordResponseDto(true);
+
         if(journey.getPassword() != dto.getPassword())
-            throw new UnAuthorizationException("no auth to join");
+            result.update(false);
 
-        ChattingRoom chattingRoom = journey.getChattingRoom();
-
-        userChattingRoomRepository.save(UserChattingRoom.mapFromRelation(user, chattingRoom));
+        return result;
     }
 
     public void quit(String journeyId, QuitJourneyDto dto) throws NotFoundException {
