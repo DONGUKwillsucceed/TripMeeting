@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tripmeeting.com.tripmeeting.controller.chatting_room.dto.SendMessageDto;
 
 import java.sql.Timestamp;
 
@@ -49,5 +50,13 @@ public class Chatting {
         this.chattingRoom = chattingRoom;
         this.createdAt = createdAt;
         this.updatedAt =updatedAt;
+    }
+
+    public static Chatting mapFromDto(SendMessageDto dto, User user, ChattingRoom chattingRoom){
+        return builder()
+                .content(dto.getContent())
+                .user(user)
+                .chattingRoom(chattingRoom)
+                .build();
     }
 }

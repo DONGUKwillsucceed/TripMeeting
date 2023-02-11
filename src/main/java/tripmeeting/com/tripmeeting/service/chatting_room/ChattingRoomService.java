@@ -1,9 +1,8 @@
 package tripmeeting.com.tripmeeting.service.chatting_room;
 
 import org.springframework.stereotype.Service;
-import tripmeeting.com.tripmeeting.controller.chatting_room.dto.ChattingDto;
-import tripmeeting.com.tripmeeting.controller.chatting_room.dto.ChattingRoomDto;
-import tripmeeting.com.tripmeeting.controller.chatting_room.dto.CreateChattingRoomDto;
+import tripmeeting.com.tripmeeting.controller.chatting_room.dto.*;
+import tripmeeting.com.tripmeeting.controller.journey.dto.MemberDto;
 import tripmeeting.com.tripmeeting.domain.entity.*;
 import tripmeeting.com.tripmeeting.domain.service.S3Service;
 import tripmeeting.com.tripmeeting.exception.exception.NotFoundException;
@@ -93,9 +92,33 @@ public class ChattingRoomService {
         userChattingRoomRepository.save(userChattingRoom2);
     }
 
-    public void delete(String userId, String roomId) throws NotFoundException {
-        User user = userRepository.findUserById(userId);
-        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(roomId);
+    public MemberDto addUser(AddUserDto dto){
+        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(dto.getRoomId());
+        User user = userRepository.findUserById(dto.getUserId());
+        UserChattingRoom userChattingRoom =
+                userChattingRoomRepository.findUserChattingRoomByChattingRoomAndUser(chattingRoom, user);
+
+        userChattingRoom.delete();
+        userChattingRoomRepository.save(userChattingRoom);
+
+        return MemberDto.mapFromRelationForUser(user);
+    }
+
+    public ChattingDto createForChatting(SendMessageDto dto) throws NotFoundException {
+        User user = userRepository.findUserById(dto.getUserId());
+        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(dto.getRoomId());
+
+        if(user == null) throw new NotFoundException("user not found");
+        if(chattingRoom == null) throw new NotFoundException("chatting room not found");
+
+        Chatting chatting = chattingRepository.save(Chatting.mapFromDto(dto, user, chattingRoom));
+
+        return ChattingDto.mapFromRelationForOne(chatting);
+    }
+
+    public MemberDto deleteUser(ExitChattingRoomDto dto) throws NotFoundException {
+        User user = userRepository.findUserById(dto.getUserId());
+        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(dto.getRoomId());
         UserChattingRoom userChattingRoom =
                 userChattingRoomRepository.findUserChattingRoomByChattingRoomAndUser(chattingRoom, user);
 
@@ -105,21 +128,22 @@ public class ChattingRoomService {
 
         userChattingRoom.delete();
         userChattingRoomRepository.save(userChattingRoom);
+        return MemberDto.mapFromRelationForUser(user);
     }
 
-    public void deleteForChatting(String userId, String roomId, String chattingId) throws NotFoundException {
-        User user = userRepository.findUserById(userId);
-        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(roomId);
+    public Chatting deleteForChatting(DeleteChattingDto dto) throws NotFoundException {
+        User user = userRepository.findUserById(dto.getUserId());
+        ChattingRoom chattingRoom = chattingRoomRepository.findChattingRoomById(dto.getRoomId());
 
         if(user == null) throw new NotFoundException("user not found");
         if(chattingRoom == null) throw new NotFoundException("chatting room not found");
 
-        Chatting chatting = chattingRepository.findChattingByUserAndChattingRoomAndId(user, chattingRoom, chattingId);
+        Chatting chatting = chattingRepository.findChattingByUserAndChattingRoomAndId(user, chattingRoom, dto.getChattingId());
 
         if(chatting == null) throw new NotFoundException("chatting not found");
 
         chatting.delete();
-        chattingRepository.save(chatting);
+        return chattingRepository.save(chatting);
     }
 
 

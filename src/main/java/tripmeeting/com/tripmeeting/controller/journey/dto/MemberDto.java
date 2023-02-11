@@ -56,4 +56,11 @@ public class MemberDto {
                     )
                     .build();
     }
+
+    public static MemberDto mapFromRelationForUser(User user){
+        return MemberDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .build();
+    }
 }

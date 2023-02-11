@@ -36,15 +36,4 @@ public class ChattingRoomController {
         chattingRoomService.create(userId, dto);
     }
 
-
-    @DeleteMapping("{roomId}")
-    public void delete(@PathVariable("userId") String userId, @PathVariable("roomId") String roomId) throws NotFoundException {
-        chattingRoomService.delete(userId, roomId);
-    }
-    @DeleteMapping("{roomId}/chatting/{chattingId}")
-    public void deleteForChatting(@PathVariable("userId") String userId,
-                                  @PathVariable("roomId") String roomId,
-                                  @PathVariable("chattingId") String chattingId) throws NotFoundException {
-        chattingRoomService.deleteForChatting(userId, roomId, chattingId);
-    }
 }

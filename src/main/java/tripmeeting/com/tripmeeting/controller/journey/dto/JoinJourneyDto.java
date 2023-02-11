@@ -11,4 +11,7 @@ public class JoinJourneyDto {
     @NotEmpty(message = "user id necessary")
     String userId;
     String password;
+
+    @NotEmpty(message = "journey id necessary")
+    String journeyId;
 }

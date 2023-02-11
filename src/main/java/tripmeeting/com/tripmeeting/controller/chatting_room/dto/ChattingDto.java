@@ -47,5 +47,14 @@ public class ChattingDto {
         return dtos;
     }
 
+    public static ChattingDto mapFromRelationForOne(Chatting chatting){
+        return ChattingDto.builder()
+                .id(chatting.getId())
+                .imageUrl(null)
+                .createdAt(chatting.getCreatedAt())
+                .memberDto(MemberDto.mapFromRelationForChatting(chatting.getUser()))
+                .build();
+    }
+
 
 }
