@@ -5,59 +5,59 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import tripmeeting.com.tripmeeting.controller.user.dto.CreateUserDto;
-import tripmeeting.com.tripmeeting.controller.user.dto.PatchUserDto;
-import tripmeeting.com.tripmeeting.domain.type.UserStatus;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@Entity
+@Entity(name = "user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
+
     @Basic
     @Column(name = "name", nullable = false)
     private String name;
+
     @Basic
-    @Column(name = "age", nullable = false)
-    private int age;
+    @Column(name = "birthday", nullable = false)
+    private Date birthday;
+
     @Basic
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", length = 500,nullable = false)
     private String description;
+
     @Basic
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private UserStatus status;
+    @Column(name = "remain_jelly", nullable = false)
+    private int remainJelly = 10;
+
     @Basic
-    @CreationTimestamp
-    @Column(name = "created_At", nullable = false)
-    private Timestamp createdAt;
-    @Basic
-    @CreationTimestamp
-    @Column(name = "updated_At", nullable = false)
-    private Timestamp updatedAt;
+    @Column(name = "jelly_capacity", nullable = false)
+    private int jellyCapacity = 10;
+
     @Basic
     @Column(name = "kakao_id")
     private String kakaoId;
+
     @Basic
     @Column(name = "naver_id")
     private String naverId;
 
-    @ManyToOne(targetEntity = AreaCode.class, fetch = FetchType.LAZY)
+    @Basic
+    @Column(name = "apple_id")
+    private String appleId;
+
+
+    @ManyToOne(targetEntity = DestinationCode.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "area_code")
-    public AreaCode areaCode;
+    public DestinationCode areaCode;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    public Collection<UserImage> userImages;
+    public Collection<ProfileImage> userImages;
 
     @ManyToOne(targetEntity = Job.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
@@ -67,56 +67,33 @@ public class User {
     @JoinTable(name = "user_hobby",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "hobby_id")})
-    private Set<Hobby> hobbies = new HashSet<>();
+    private List<Hobby> hobbies;
 
-    public void patch(PatchUserDto dto, Job job, Set<Hobby> hobbies){
-        if(dto.getName() != null)
-            this.name = dto.getName();
-        if(dto.getAge() > 0)
-            this.age = dto.getAge();
-        if(dto.getDescription() != null)
-            this.description = dto.getDescription();
-        if(job != null)
-            this.job = job;
-        if(hobbies != null)
-            this.hobbies = hobbies;
-    }
-
-    public void delete(){
-        status = UserStatus.deleted;
-    }
 
     @Builder
-    public User(String id, String name, int age, AreaCode areaCode, Job job, String description, UserStatus status,
-                Timestamp createdAt, Timestamp updatedAt, String kakaoId, String naverId, Set<Hobby> hobbies, List<UserImage> images){
+    public User(String id,
+                String name,
+                Date birthday,
+                DestinationCode areaCode,
+                Job job,
+                String description,
+                String kakaoId,
+                String naverId,
+                String appleId,
+                List<Hobby> hobbies,
+                List<ProfileImage> images){
         this.id = id;
         this.name = name;
-        this.age = age;
+        this.birthday = birthday;
         this.areaCode = areaCode;
         this.job = job;
         this.description = description;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.kakaoId = kakaoId;
         this.naverId = naverId;
+        this.appleId = appleId;
         this.hobbies = hobbies;
         this.userImages = images;
     }
 
-    public static User mapFromDto(CreateUserDto dto, AreaCode areaCode,Job job, Set<Hobby> hobbies, List<UserImage> images){
-        return User.builder()
-                .name(dto.getName())
-                .age(dto.getAge())
-                .areaCode(areaCode)
-                .job(job)
-                .hobbies(hobbies)
-                .status(UserStatus.okay)
-                .description(dto.getDescription())
-                .kakaoId(dto.getKakaoId())
-                .naverId(dto.getNaverId())
-                .images(images)
-                .build();
-    }
 
 }

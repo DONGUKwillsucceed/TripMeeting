@@ -8,19 +8,30 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
+@Table(name = "destination_code", schema = "TripMeeting")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Job {
+public class DestinationCode {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
     @Basic
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
+
+    @Basic
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Basic
+    @Column(name = "longitude")
+    private double longitude;
+
     @Builder
-    public Job(String id, String name){
-        this.id = id;
+    public DestinationCode(String name, double latitude, double longitude){
         this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

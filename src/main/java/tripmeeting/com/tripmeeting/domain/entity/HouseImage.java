@@ -5,38 +5,25 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-
-@Entity @Getter
+@Entity(name = "house_image") @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HouseImage {
+public class HouseImage extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id")
     private String id;
     @Basic
-    @Column(name = "url")
-    private String url;
-    @Basic
-    @Column(name = "name")
-    private String name;
-    @Basic
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private Timestamp createdAt;
-    @Basic
-    @CreationTimestamp
-    @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    @Column(name = "storage_path", length = 500, nullable = false)
+    private String storagePath;
+
+    @ManyToOne(targetEntity = DestinationCode.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_code")
+    public DestinationCode areaCode;
+
     @Builder
-    public HouseImage(String id, String url, String name, Timestamp createdAt, Timestamp updatedAt){
-        this.id = id;
-        this.url = url;
-        this.name = name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    public HouseImage(String url){
+        this.storagePath = url;
     }
 
 }
